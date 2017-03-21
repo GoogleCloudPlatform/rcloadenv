@@ -1,0 +1,46 @@
+# Testing
+
+The tests in this repository are system tests and run against live services,
+therefore, it takes a bit of configuration to run all of the tests locally.
+
+Before you can run tests locally you must have:
+
+* The [Google Cloud SDK](https://cloud.google.com/sdk/) installed. You
+  can do so with the following command:
+
+      curl https://sdk.cloud.google.com | bash
+
+## Preparing a project for testing
+
+Tests require you to have an active, billing-enabled project on the
+[Google Cloud Console](https://console.cloud.google.com).
+
+### Creating resources
+
+Some resources need to be created in a project ahead of time before testing. We
+have a script that can create everything needed:
+
+    gcloud config set project [YOUR-PROJECT-ID]
+    scripts/prepare-testing-project.sh
+
+Replace `[YOUR-PROJECT-ID]` with your Google Cloud Platform project ID.
+
+### Load the rcloadenv binary to your PATH
+
+The rcloadenv binary needs to be on your PATH to test locally.
+
+#### Python
+
+Activate a virtual environment.
+
+    virtualenv env
+    source env/bin/activate
+
+Install the rcloadenv Python package in editable mode.
+
+    pip install -e ./python
+
+### Run the test
+
+    testing/run-test.sh
+
