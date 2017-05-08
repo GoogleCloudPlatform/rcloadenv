@@ -1,0 +1,21 @@
+{
+  "name": "@google-cloud/rcloadenv",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": "Google Inc.",
+  "engines": {
+    "node": ">=4"
+  },
+  "bin": {
+    "rcloadenv": "./bin/rcloadenv"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "semistandard"
+  },
+  "dependencies": {
+    "google-auto-auth": "0.7.0",
+    "got": "6.7.1",
+    "lodash.snakecase": "4.1.1"
+  }
+}

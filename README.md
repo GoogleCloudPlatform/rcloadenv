@@ -16,6 +16,16 @@ Config API. Choose the one that best fits your development environment.
 
     pip install rcloadenv
 
+### Node.js package
+
+Using `npm`:
+
+    npm install -g @google-cloud/rcloadenv
+
+Using `yarn`:
+
+    yarn global add @google-cloud/rcloadenv
+
 ## Usage
 
 First, create a configuration using the [Google Cloud
