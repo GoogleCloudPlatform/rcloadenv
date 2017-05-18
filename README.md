@@ -16,6 +16,9 @@ Config API. Choose the one that best fits your development environment.
 
     pip install rcloadenv
 
+### Java (Spring)
+   See instructions [here](java/README.md)
+
 ## Usage
 
 First, create a configuration using the [Google Cloud
