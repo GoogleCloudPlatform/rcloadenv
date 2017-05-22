@@ -20,35 +20,82 @@
 const childProcess = require('child_process');
 const rcloadenv = require('../');
 
-const USAGE = 'Usage: rcloadenv <configName> -- <args...>';
+const USAGE = `Wrap execution of the given command with runtime-config variables.
+Usage: rcloadenv <configName> [options] -- [args...]`;
 
-const configName = process.argv.slice(2)[0];
-const args = process.argv.slice(4);
+const cli = exports.cli = require('yargs')
+  .demand(1)
+  .usage(USAGE)
+  .options({
+    debug: {
+      alias: 'd',
+      description: 'Print debugging information.',
+      type: 'boolean'
+    },
+    except: {
+      alias: 'E',
+      description: 'If provided, a list of of runtime-config variables to exclude, otherwise all runtime-config variables will be used.',
+      type: 'array'
+    },
+    only: {
+      alias: 'O',
+      description: 'If provided, a list of of runtime-config variables to load, otherwise all runtime-config variables will be used.',
+      type: 'array'
+    },
+    override: {
+      alias: 'o',
+      default: true,
+      description: 'Determines the behavior of rcloadenv in the case when a runtime-config variable conflicts with a variable already available in the environment. If true, a runtime-config variable will override the existing environment variable, otherwise the existing environment variable will be kept.',
+      type: 'boolean'
+    },
+    projectId: {
+      aliases: ['project', 'p'],
+      description: 'The project where the specified config is located.',
+      type: 'string'
+    }
+  })
+  .example(`rcloadenv my-config -- bash -c 'echo $MY_VARIABLE_NAME'`, `Print a variable's value from the specified config.`)
+  .wrap(120)
+  .recommendCommands()
+  .epilogue(`For more information, see https://github.com/GoogleCloudPlatform/rcloadenv`)
+  .help()
+  .strict();
 
-if (!configName || !args.length) {
-  console.error(USAGE);
-  process.exit(1);
+function main (argv) {
+  const opts = cli.parse(argv);
+
+  const configName = opts._[0];
+  const args = opts._.slice(1);
+
+  if (!configName || !args.length) {
+    console.error(USAGE);
+    process.exit(1);
+  }
+
+  const currentEnv = Object.assign({}, process.env);
+
+  rcloadenv.getAndApply(configName, currentEnv, opts)
+    .then((env) => {
+
+      return new Promise((resolve, reject) => {
+        childProcess.spawn(args.shift(), args, {
+          stdio: 'inherit',
+          env
+        }).on('error', console.error).on('exit', (code) => {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error('Command failed'));
+          }
+        });
+      });
+    })
+    .catch((err) => {
+      console.error(process.env.DEBUG ? err.stack : err.message);
+      process.exit(1);
+    });
 }
 
-const currentEnv = Object.assign({}, process.env);
-
-rcloadenv.getAndApply(configName, currentEnv)
-  .then((env) => {
-
-    return new Promise((resolve, reject) => {
-      childProcess.spawn(args.shift(), args, {
-        stdio: 'inherit',
-        env
-      }).on('error', console.error).on('exit', (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error('Command failed'));
-        }
-      });
-    });
-  })
-  .catch((err) => {
-    console.error(process.env.DEBUG ? err.stack : err.message);
-    process.exit(1);
-  });
+if (module === require.main) {
+  main(process.argv.slice(2));
+}

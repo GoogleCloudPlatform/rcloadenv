@@ -49,6 +49,12 @@ function fetchPage (url, authToken, nextPageToken) {
   });
 }
 
+const debug = exports.debug = (opts, ...args) => {
+  if (opts.debug) {
+    console.log('DEBUG:', ...args);
+  }
+};
+
 /**
  * Retrieves all variables in the given config.
  *
@@ -57,8 +63,10 @@ function fetchPage (url, authToken, nextPageToken) {
  * @returns {Promise}
  */
 exports.getVariables = (configName, opts = {}) => {
-  opts.projectId || (opts.projectId = process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT);
+  opts.projectId || (opts.projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT);
   opts.scopes || (opts.scopes = ['https://www.googleapis.com/auth/cloudruntimeconfig']);
+
+  debug(opts, `Loading config "${configName}" from project "${opts.projectId}".`);
 
   let requestUrl;
 
@@ -86,13 +94,27 @@ exports.getVariables = (configName, opts = {}) => {
  * Out: { VAR1: "...", VAR2: "...", ... }
  *
  * @param {object[]} variables
+ * @param {object} [opts]
  */
-exports.transform = (variables) => {
+exports.transform = (variables, opts = {}) => {
   const env = {};
+
+  opts.only || (opts.only = []);
+  opts.except || (opts.except = []);
 
   variables.forEach((variable) => {
     let value;
-    const name = path.parse(variable.name).base;
+    const name = path.parse(variable.name).base.replace('-', '_');
+    debug(opts, `Found: ${name}`);
+
+    if (opts.only.length && opts.only.indexOf(name) === -1) {
+      debug(opts, `Skipping: ${name}`);
+      return;
+    } else if (opts.except.length && opts.except.indexOf(name) !== -1) {
+      debug(opts, `Skipping: ${name}`);
+      return;
+    }
+    debug(opts, `Setting: ${name} and ${snakeCase(name).toUpperCase()}`);
 
     if (variable.text) {
       value = variable.text;
@@ -111,9 +133,10 @@ exports.transform = (variables) => {
  *
  * @param {object[]} variables
  * @param {object} [env]
+ * @param {object} [opts]
  */
-exports.apply = (variables, env = process.env) => {
-  return Object.assign(env, exports.transform(variables));
+exports.apply = (variables, env = process.env, opts = {}) => {
+  return Object.assign(env, exports.transform(variables, opts));
 };
 
 /**
@@ -127,5 +150,5 @@ exports.apply = (variables, env = process.env) => {
  */
 exports.getAndApply = (configName, env = process.env, opts = {}) => {
   return exports.getVariables(configName, opts)
-    .then((variables) => exports.apply(variables, env));
+    .then((variables) => exports.apply(variables, env, opts));
 };

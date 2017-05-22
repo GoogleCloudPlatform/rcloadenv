@@ -21,7 +21,7 @@ Some resources need to be created in a project ahead of time before testing. We
 have a script that can create everything needed:
 
     gcloud config set project [YOUR-PROJECT-ID]
-    scripts/prepare-testing-project.sh
+    ./scripts/prepare-testing-project.sh
 
 Replace `[YOUR-PROJECT-ID]` with your Google Cloud Platform project ID.
 
@@ -40,7 +40,21 @@ Install the rcloadenv Python package in editable mode.
 
     pip install -e ./python
 
+#### Node.js
+
+1.  Change directory into the Node.js folder:
+
+        cd nodejs
+
+1.  Install dependencies:
+
+        npm install
+
+1.  Temporarily add the Node.js rcloadenv binary to your path:
+
+        export PATH=$PATH:/path/to/rcloadenv/nodejs/bin/rcloadenv
+
 ### Run the test
 
-    testing/run-test.sh
+    ./testing/run-test.sh
 
