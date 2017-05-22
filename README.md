@@ -48,6 +48,10 @@ Use the `rcloadenv` command to launch your process.
 
     rcloadenv my-config -- bash -c 'echo $MY_VARIABLE_NAME'
 
+## Disclaimer
+
+This is not an official Google product, experimental or otherwise.
+
 ## Contributing changes
 
 * See [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -55,3 +59,4 @@ Use the `rcloadenv` command to launch your process.
 ## Licensing
 
 * See [LICENSE](LICENSE)
+
