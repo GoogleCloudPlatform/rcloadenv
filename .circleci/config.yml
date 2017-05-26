@@ -1,0 +1,112 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    working_directory: ~/build
+    steps:
+      - run:
+          name: trigger-golang
+          command: |
+            # Trigger builds.
+            # https://circleci.com/docs/2.0/defining-multiple-jobs/#triggering-jobs
+            curl --user ${CIRCLE_API_TOKEN}: \
+                --data build_parameters[CIRCLE_JOB]=golang \
+                --data revision=$CIRCLE_SHA1 \
+                https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+      - run:
+          name: trigger-nodejs
+          command: |
+            curl --user ${CIRCLE_API_TOKEN}: \
+                --data build_parameters[CIRCLE_JOB]=nodejs \
+                --data revision=$CIRCLE_SHA1 \
+                https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+      - run:
+          name: trigger-python
+          command: |
+            curl --user ${CIRCLE_API_TOKEN}: \
+                --data build_parameters[CIRCLE_JOB]=python27 \
+                --data revision=$CIRCLE_SHA1 \
+                https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+            curl --user ${CIRCLE_API_TOKEN}: \
+                --data build_parameters[CIRCLE_JOB]=python36 \
+                --data revision=$CIRCLE_SHA1 \
+                https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+
+  golang:
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: /go/src/github.com/GoogleCloudPlatform/rcloadenv
+    steps:
+      - checkout
+      - run:
+          name: extract-credentials
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" | base64 --decode --ignore-garbage > "${HOME}/service-key.json"
+      - run:
+          name: system-tests
+          command: |
+            export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/service-key.json"
+            go get .
+            go install .
+            ./testing/run-test.sh
+
+  nodejs:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: lint
+          command: |
+            npm --prefix ./nodejs install
+            npm --prefix ./nodejs run lint
+      - run:
+          name: extract-credentials
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" | base64 --decode --ignore-garbage > "${HOME}/service-key.json"
+      - run:
+          name: system-tests
+          command: |
+            export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/service-key.json"
+            export PATH="$PWD/nodejs/bin:$PATH"
+            ./testing/run-test.sh
+
+  python27:
+    docker:
+      - image: circleci/python:2.7
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: extract-credentials
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" | base64 --decode --ignore-garbage > "${HOME}/service-key.json"
+      - run:
+          name: system-tests
+          command: |
+            export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/service-key.json"
+            pip install virtualenv
+            virtualenv venv
+            . venv/bin/activate
+            pip install -e ./python
+            ./testing/run-test.sh
+
+  python36:
+    docker:
+      - image: circleci/python:3.6
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: extract-credentials
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" | base64 --decode --ignore-garbage > "${HOME}/service-key.json"
+      - run:
+          name: system-tests
+          command: |
+            export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/service-key.json"
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -e ./python
+            ./testing/run-test.sh

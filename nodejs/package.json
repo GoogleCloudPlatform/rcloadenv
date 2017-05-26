@@ -18,5 +18,8 @@
     "got": "6.7.1",
     "lodash.snakecase": "4.1.1",
     "yargs": "8.0.1"
+  },
+  "devDependencies": {
+    "semistandard": "^11.0.0"
   }
 }
