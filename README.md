@@ -26,6 +26,14 @@ Using `yarn`:
 
     yarn global add @google-cloud/rcloadenv
 
+### Ruby package
+
+Install the gem:
+
+    gem install rcloadenv
+
+Or include "rcloadenv" in your application's Gemfile.
+
 ## Usage
 
 First, create a configuration using the [Google Cloud

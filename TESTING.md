@@ -54,6 +54,12 @@ Install the rcloadenv Python package in editable mode.
 
         export PATH=$PATH:/path/to/rcloadenv/nodejs/bin/rcloadenv
 
+#### Ruby
+
+Temporarily add the Ruby rcloadenv binary to your path:
+
+    export PATH=/path/to/rcloadenv/ruby/bin:$PATH
+
 ### Run the test
 
     ./testing/run-test.sh
