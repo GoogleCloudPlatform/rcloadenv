@@ -39,7 +39,7 @@ require 'rcloadenv/version'
   spec.bindir = "bin"
   spec.executables = ["rcloadenv"]
 
-  spec.add_dependency "google-api-client", "~> 0.5"
+  spec.add_dependency "google-api-client", "~> 0.13"
   spec.add_dependency "google-cloud-core", "~> 1.0"
   spec.add_dependency "google-cloud-env", "~> 1.0"
 
