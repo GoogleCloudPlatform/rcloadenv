@@ -56,6 +56,15 @@ Install the rcloadenv Python package in editable mode.
 
 #### Ruby
 
+Ruby 2.0 or later is required. Make sure a recent version of bundler is
+available. If not, run:
+
+    gem install bundler
+
+Make sure the gem dependencies are installed:
+
+    bundle install --gemfile=ruby/Gemfile
+
 Temporarily add the Ruby rcloadenv binary to your path:
 
     export PATH=/path/to/rcloadenv/ruby/bin:$PATH
