@@ -25,19 +25,16 @@ module RCLoadEnv
     ##
     # Create a command line handler.
     #
-    # @param [String] invocation The rcloadenv binary invoked.
     # @param [Array<String>] args Command-line arguments
     #
-    def initialize invocation, args
-      @invocation = invocation
-      @args = args
+    def initialize args
       @project = nil
       @exclude = []
       @include = []
       @override = false
       @debug = false
-      @disable_bundler = false
-      parser = OptionParser.new do |opts|
+
+      @parser = OptionParser.new do |opts|
         opts.banner = "Usage: rcloadenv [options] <config-name> -- <command>"
         opts.on "-p name", "--project=name", "--projectId=name",
                 "Project to read runtime config from" do |p|
@@ -58,66 +55,55 @@ module RCLoadEnv
         opts.on "-d", "--debug", "Enable debug output" do
           @debug = true
         end
-        opts.on "-B", "--disable-bundler", "Disable auto bundle exec" do
-          @disable_bundler = true
+        opts.on_tail "--version", "Show the version and exit" do
+          puts RCLoadEnv::VERSION
+          exit
         end
-        opts.on "-?", "--help", "Show the help text and exit" do
-          puts parser.help
+        opts.on_tail "-?", "--help", "Show the help text and exit" do
+          puts @parser.help
           exit
         end
       end
-      @command_list = parser.parse args
-      @config_name = @command_list.shift
-      unless @config_name && @command_list.size > 0
-        STDERR.puts "rcloadenv: config name and command are both required."
-        STDERR.puts parser.help
-        exit 1
+
+      separator_index = args.index "--"
+      @command_list = separator_index ? args[(separator_index+1)..-1] : []
+
+      args = args[0..separator_index] if separator_index
+      begin
+        remaining_args = @parser.parse args
+      rescue OptionParser::ParseError => ex
+        usage_error ex.message
+      end
+      @config_name = remaining_args.shift
+      unless @config_name
+        usage_error "You must provide a config name."
+      end
+      unless remaining_args.empty?
+        usage_error "Extra arguments found: #{remaining_args.inspect}"
+      end
+
+      if @command_list.empty?
+        usage_error "You must provide a command delimited by `--`."
       end
     end
 
     ##
-    # Run the command line handler. This will rewrap the invocation in
-    # `bundle exec` if needed. This method either never returns or throws
+    # Run the command line handler. This method either never returns or throws
     # an exception.
     #
     def run
-      execute if @disable_bundler
-      execute unless ENV["BUNDLE_GEMFILE"].to_s.empty?
-      execute unless bundler_exists?
-      execute unless gemfile_exists?
-      if @debug
-        puts "Rerunning rcloadenv under bundle exec. Pass -B to disable this."
-      end
-      exec "bundle", "exec", @invocation, "-B", *@args
-    end
-
-    ##
-    # Determine whether bundler appears to be present
-    # @private
-    #
-    def bundler_exists?
-      `bundle version`
-      $?.exitstatus == 0
-    end
-
-    ##
-    # Determine whether there is a Gemfile
-    # @private
-    #
-    def gemfile_exists?
-      File.readable? "Gemfile"
-    end
-
-    ##
-    # Load the runtime config and execute the command. Never returns.
-    # @private
-    #
-    def execute
       loader = RCLoadEnv::Loader.new @config_name,
           exclude: @exclude, include: @include, override: @override,
           project: @project, debug: @debug
       loader.modify_env ENV
-      exec *@command_list
+      exec(*@command_list)
+    end
+
+    ## @private
+    def usage_error msg
+      STDERR.puts "rcloadenv: #{msg}"
+      STDERR.puts @parser.help
+      exit 1
     end
   end
 end

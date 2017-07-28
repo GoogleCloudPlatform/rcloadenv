@@ -25,5 +25,5 @@ rescue LoadError
   require "rcloadenv"
 end
 
-cli = RCLoadEnv::CLI.new $0, ARGV
+cli = RCLoadEnv::CLI.new ARGV
 cli.run

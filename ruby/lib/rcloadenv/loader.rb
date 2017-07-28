@@ -33,11 +33,16 @@ module RCLoadEnv
     # Create a loader. Alwaus uses application default credentials.
     #
     # @param [String] config_name Name of the runtime config resource
+    # @param [Array<String>] exclude Config keys to exclude (optional)
+    # @param [Array<String>] include Config keys to include (optional)
+    # @param [Boolean] override Whether to override existing environment
+    #     variables (default: false)
     # @param [String,nil] project Optional name of the cloud project. If not
     #     set, attempts to infer one from the environment.
+    # @param [Boolean] debug Whether to print debug output (default: false)
     #
     def initialize config_name,
-                   exclude: nil, include: nil, override: false,
+                   exclude: [], include: [], override: false,
                    project: nil, debug: false
       @config_name = config_name.to_s
       @project = (project || default_project).to_s
@@ -54,11 +59,11 @@ module RCLoadEnv
 
     ##
     # Modify the given environment with the configuration. The given hash
-    # is modified in place. If no hash is provided, a new one is created
-    # and returned.
+    # is modified in place and returned. If no hash is provided, a new one is
+    # created and returned.
     #
     # @param [Hash<String,String>] env The environment to modify.
-    # @return the environment.
+    # @return the modified environment.
     #
     def modify_env env={}
       raw_variables.each do |k, v|
@@ -98,7 +103,7 @@ module RCLoadEnv
       @service ||= create_service
     end
 
-    ## @private
+    ## @private Used to mock the service for testing
     def service= mock
       @service = mock
     end
