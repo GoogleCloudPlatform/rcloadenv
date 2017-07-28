@@ -11,10 +11,11 @@ Install the gem using
 
     gem install rcloadenv
 
-Alternately, include "rcloadenv" in your bundle.
+Alternately, include "rcloadenv" in your application's Gemfile.
 
 You may then invoke the "rcloadenv" binary. You must pass the name of the
-runtime config resource, and then the command to execute. For example:
+runtime config resource, and then the command to execute. For example, if
+the gem is present in the bundle for your Rails app, you can execute:
 
     bundle exec rcloadenv my-config -- bin/rails s
 
@@ -29,9 +30,10 @@ example:
     bundle exec rcloadenv --project=my-project my-config -- bin/rails s
 
 Run `rcloadenv --help` for more information on flags you can set.
+
 When not running on GCP, credentials are obtained from
-[Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials)
-so you can the `GOOGLE_APPLICATION_CREDENTIALS` environment variable or
+[Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials),
+so you can set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable or
 configure `gcloud auth`.
 
 ## Example: Loading the Rails SECRET_KEY_BASE in Google App Engine
@@ -89,9 +91,9 @@ service, and use `rcloadenv` to load it into the Rails app. Here's how.
 5.  Use the gcloud command line to set `SECRET_KEY_BASE` in your configuration.
 
         gcloud beta runtime-config configs variables set \
-          SECRET_KEY_BASE 12345678 --config-name=my-config
+          SECRET_KEY_BASE abcd1234 --is-text --config-name=my-config
 
-    Replace `my-config` with the name of your configuration, and `12345678`
+    Replace `my-config` with the name of your configuration, and `abcd1234`
     with the secret key that you generated above.
 
 6.  Add the `rcloadenv` gem to your Gemfile, and run `bundle install` to update
