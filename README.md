@@ -16,6 +16,9 @@ Config API. Choose the one that best fits your development environment.
 
     pip install rcloadenv
 
+For more information on using `rcloadenv` with Python, see
+[python/README.rst]().
+
 ### Node.js package
 
 Using `npm`:
@@ -26,6 +29,9 @@ Using `yarn`:
 
     yarn global add @google-cloud/rcloadenv
 
+For more information on using `rcloadenv` with Node.js, see
+[nodejs/README.md]().
+
 ### Ruby package
 
 Install the gem:
@@ -33,6 +39,8 @@ Install the gem:
     gem install rcloadenv
 
 Or include "rcloadenv" in your application's Gemfile.
+
+For more information on using `rcloadenv` with Ruby, see [ruby/README.md]().
 
 ## Usage
 

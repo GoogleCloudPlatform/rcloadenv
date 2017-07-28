@@ -16,12 +16,34 @@ Using `yarn`:
 
 ### Usage
 
-    rcloadenv <configName> -- <args...>
+Output of `rcloadenv --help`:
+
+```
+Wrap execution of the given command with runtime-config variables.
+Usage: rcloadenv <configName> [options] -- [args...]
+
+Options:
+  --debug, -d                 Print debugging information.                                                     [boolean]
+  --except, -E                If provided, a list of of runtime-config variables to exclude, otherwise all
+                              runtime-config variables will be used.                                             [array]
+  --only, -O                  If provided, a list of of runtime-config variables to load, otherwise all runtime-config
+                              variables will be used.                                                            [array]
+  --override, -o              Determines the behavior of rcloadenv in the case when a runtime-config variable conflicts
+                              with a variable already available in the environment. If true, a runtime-config variable
+                              will override the existing environment variable, otherwise the existing environment
+                              variable will be kept.                                           [boolean] [default: true]
+  --projectId, --project, -p  The project where the specified config is located.                                [string]
+  --help                      Show help                                                                        [boolean]
 
 Examples:
+  rcloadenv my-config -- bash -c 'echo $MY_VARIABLE_NAME'       Print a variable's value from the specified config.
+  rcloadenv my-config --only var1 var2 -- node app.js           Only load two variables from runtime-config.
+  rcloadenv my-config --except var1 var2 -- node app.js         Load all but two variables from runtime-config.
+  rcloadenv my-config --debug -- node app.js                    Print debugging information while loading variables.
+  rcloadenv my-config --projectId my-project-id -- node app.js  Specify the project ID to use when loading variables.
 
-    rcloadenv my-prod-config -- node app.js
-    rcloadenv my-dev-config -- node app.js --debug
+For more information, see https://github.com/GoogleCloudPlatform/rcloadenv
+```
 
 ## API
 
