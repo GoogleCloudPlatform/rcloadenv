@@ -16,6 +16,9 @@ Config API. Choose the one that best fits your development environment.
 
     pip install rcloadenv
 
+For more information on using `rcloadenv` with Python, see
+[python/README.rst]().
+
 ### Node.js package
 
 Using `npm`:
@@ -25,6 +28,9 @@ Using `npm`:
 Using `yarn`:
 
     yarn global add @google-cloud/rcloadenv
+
+For more information on using `rcloadenv` with Node.js, see
+[nodejs/README.md]().
 
 ## Usage
 
