@@ -31,6 +31,13 @@ jobs:
                 --data build_parameters[CIRCLE_JOB]=python36 \
                 --data revision=$CIRCLE_SHA1 \
                 https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
+      - run:
+          name: trigger-ruby
+          command: |
+            curl --user ${CIRCLE_API_TOKEN}: \
+                --data build_parameters[CIRCLE_JOB]=ruby \
+                --data revision=$CIRCLE_SHA1 \
+                https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH
 
   golang:
     docker:
@@ -109,4 +116,26 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -e ./python
+            ./testing/run-test.sh
+
+  ruby:
+    docker:
+      - image: circleci/ruby:2.4
+    working_directory: ~/build
+    steps:
+      - checkout
+      - run:
+          name: install-dependencies
+          command: |
+            gem install bundler
+            bundle install --gemfile ruby/Gemfile
+      - run:
+          name: extract-credentials
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" | base64 --decode --ignore-garbage > "${HOME}/service-key.json"
+      - run:
+          name: system-tests
+          command: |
+            export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/service-key.json"
+            export PATH="$PWD/ruby/bin:$PATH"
             ./testing/run-test.sh

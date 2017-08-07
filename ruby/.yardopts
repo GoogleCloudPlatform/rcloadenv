@@ -1,0 +1,9 @@
+--no-private
+--title=RCLoadEnv
+--markup markdown
+
+./lib/rcloadenv.rb
+./lib/rcloadenv/*.rb
+-
+README.md
+CHANGELOG.md

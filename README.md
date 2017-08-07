@@ -32,6 +32,16 @@ Using `yarn`:
 For more information on using `rcloadenv` with Node.js, see
 [nodejs/README.md]().
 
+### Ruby package
+
+Install the gem:
+
+    gem install rcloadenv
+
+Or include "rcloadenv" in your application's Gemfile.
+
+For more information on using `rcloadenv` with Ruby, see [ruby/README.md]().
+
 ## Usage
 
 First, create a configuration using the [Google Cloud
