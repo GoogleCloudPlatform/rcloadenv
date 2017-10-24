@@ -94,9 +94,10 @@ exports.getVariables = (configName, opts = {}) => {
  * Out: { VAR1: "...", VAR2: "...", ... }
  *
  * @param {object[]} variables
+ * @param {object} [oldEnv]
  * @param {object} [opts]
  */
-exports.transform = (variables, oldEnv, opts = {}) => {
+exports.transform = (variables, oldEnv = {}, opts = {}) => {
   const env = {};
 
   opts.only || (opts.only = []);
