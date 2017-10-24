@@ -44,7 +44,7 @@ const cli = exports.cli = require('yargs')
     },
     override: {
       alias: 'o',
-      default: true,
+      default: false,
       description: 'Determines the behavior of rcloadenv in the case when a runtime-config variable conflicts with a variable already available in the environment. If true, a runtime-config variable will override the existing environment variable, otherwise the existing environment variable will be kept.',
       type: 'boolean'
     },

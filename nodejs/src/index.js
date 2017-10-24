@@ -94,9 +94,10 @@ exports.getVariables = (configName, opts = {}) => {
  * Out: { VAR1: "...", VAR2: "...", ... }
  *
  * @param {object[]} variables
+ * @param {object} [oldEnv]
  * @param {object} [opts]
  */
-exports.transform = (variables, opts = {}) => {
+exports.transform = (variables, oldEnv = {}, opts = {}) => {
   const env = {};
 
   opts.only || (opts.only = []);
@@ -122,7 +123,13 @@ exports.transform = (variables, opts = {}) => {
       value = Buffer.from(variable.value, 'base64').toString();
     }
 
-    env[snakeCase(name).toUpperCase()] = env[name] = value;
+    const upperName = snakeCase(name).toUpperCase();
+    if (opts.override || !oldEnv[name]) {
+      env[name] = value;
+    }
+    if (opts.override || !oldEnv[upperName]) {
+      env[upperName] = value;
+    }
   });
 
   return env;
@@ -136,7 +143,7 @@ exports.transform = (variables, opts = {}) => {
  * @param {object} [opts]
  */
 exports.apply = (variables, env = process.env, opts = {}) => {
-  return Object.assign(env, exports.transform(variables, opts));
+  return Object.assign(env, exports.transform(variables, env, opts));
 };
 
 /**
