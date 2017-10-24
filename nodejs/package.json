@@ -1,25 +1,34 @@
 {
   "name": "@google-cloud/rcloadenv",
-  "version": "0.1.0",
+  "description": "Node.js implementation of rcloadenv.",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "author": "Google Inc.",
   "engines": {
     "node": ">=4"
   },
+  "main": "src/index.js",
   "bin": {
     "rcloadenv": "./bin/rcloadenv"
   },
-  "main": "src/index.js",
+  "contributors": [
+    "Daniel Azuma <dazuma@gmail.com>",
+    "Jason Dobry <jason.dobry@gmail.com>",
+    "Jason Dobry <jmdobry@users.noreply.github.com>",
+    "Tim Swast <swast@google.com>"
+  ],
   "scripts": {
-    "lint": "semistandard"
+    "lint": "repo-tools lint",
+    "generate": "repo-tools generate pkgjson"
   },
   "dependencies": {
-    "google-auto-auth": "0.7.0",
-    "got": "6.7.1",
+    "google-auto-auth": "0.7.2",
+    "got": "7.1.0",
     "lodash.snakecase": "4.1.1",
-    "yargs": "8.0.1"
+    "yargs": "10.0.3"
   },
   "devDependencies": {
-    "semistandard": "^11.0.0"
+    "@google-cloud/nodejs-repo-tools": "2.0.11",
+    "semistandard": "11.0.0"
   }
 }
