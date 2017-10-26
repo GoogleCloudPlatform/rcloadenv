@@ -2,9 +2,17 @@
 
 # rcloadenv for Node.js
 
+Node.js implementation of [rcloadenv][].
+
+Wraps execution of a given command and loads variables from the
+[Google Cloud Runtime Config API][runtime] into that process.
+
+rcloadenv: https://github.com/GoogleCloudPlatform/rcloadenv
+runtime: https://cloud.google.com/deployment-manager/runtime-configurator/reference/rest/
+
 ## CLI
 
-### Installation
+### Global Installation
 
 Using `npm`:
 
@@ -13,6 +21,24 @@ Using `npm`:
 Using `yarn`:
 
     yarn global add @google-cloud/rcloadenv
+
+### Local Installation
+
+Using `npm`:
+
+    npm install @google-cloud/rcloadenv
+
+Using `yarn`:
+
+    yarn add @google-cloud/rcloadenv
+
+Now wrap your app's `start` script with `rcloadenv` in `package.json`:
+
+```json
+"scripts": {
+  "start": "rcloadenv my-config -- node app.js"
+}
+```
 
 ### Usage
 
@@ -23,6 +49,7 @@ Wrap execution of the given command with runtime-config variables.
 Usage: rcloadenv <configName> [options] -- [args...]
 
 Options:
+  --version                   Show version number                                                              [boolean]
   --debug, -d                 Print debugging information.                                                     [boolean]
   --except, -E                If provided, a list of of runtime-config variables to exclude, otherwise all
                               runtime-config variables will be used.                                             [array]
@@ -31,7 +58,7 @@ Options:
   --override, -o              Determines the behavior of rcloadenv in the case when a runtime-config variable conflicts
                               with a variable already available in the environment. If true, a runtime-config variable
                               will override the existing environment variable, otherwise the existing environment
-                              variable will be kept.                                           [boolean] [default: true]
+                              variable will be kept.                                          [boolean] [default: false]
   --projectId, --project, -p  The project where the specified config is located.                                [string]
   --help                      Show help                                                                        [boolean]
 
@@ -102,3 +129,15 @@ rcloadenv.getAndApply('my-config', newEnv)
     console.error('ERROR:', err);
   });
 ```
+
+## Contributing
+
+See the [CONTRIBUTING.md] file.
+
+[contributing]: https://github.com/GoogleCloudPlatform/rcloadenv/tree/master/CONTRIBUTING.md
+
+## License
+
+Apache-2.0, see the [LICENSE][license] file.
+
+[license]: https://github.com/GoogleCloudPlatform/rcloadenv/tree/master/LICENSE
