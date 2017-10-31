@@ -15,6 +15,8 @@
 
 require "minitest/autorun"
 require "rcloadenv"
+require "stringio"
+require "dotenv"
 
 module RCLoadEnv
   module Tests  # :nodoc:
@@ -23,6 +25,8 @@ module RCLoadEnv
 
       PROJECT = "my-project"
       CONFIG = "my-config"
+
+      CRAZY_VALUE = "value$HI\n \\$(date)"
 
       def setup_loader opts={}
         loader = Loader.new CONFIG, opts.merge(project: PROJECT)
@@ -33,7 +37,7 @@ module RCLoadEnv
               {name: "var1", value: "binval"},
               {name: "var2", text: "txtval"},
               {name: "long/path/name", value: "value3"},
-              {name: "Name-With-Dashes", value: "value4"}
+              {name: "Name-With-Dashes", value: CRAZY_VALUE}
             ]
           },
           ["projects/#{PROJECT}/configs/#{CONFIG}", {return_values: true}]
@@ -49,7 +53,7 @@ module RCLoadEnv
             "VAR1" => "binval",
             "VAR2" => "txtval",
             "NAME" => "value3",
-            "NAME_WITH_DASHES" => "value4"
+            "NAME_WITH_DASHES" => CRAZY_VALUE
           }
           assert_equal expected_env, loader.modify_env
         end
@@ -59,7 +63,7 @@ module RCLoadEnv
         setup_loader exclude: ["var1", "VAR2", "long/path/name"] do |loader|
           expected_env = {
             "VAR2" => "txtval",
-            "NAME_WITH_DASHES" => "value4"
+            "NAME_WITH_DASHES" => CRAZY_VALUE
           }
           assert_equal expected_env, loader.modify_env
         end
@@ -84,7 +88,7 @@ module RCLoadEnv
             "VAR1" => "original",
             "VAR2" => "txtval",
             "NAME" => "value3",
-            "NAME_WITH_DASHES" => "value4"
+            "NAME_WITH_DASHES" => CRAZY_VALUE
           }
           assert_equal expected_env, loader.modify_env(env)
         end
@@ -99,9 +103,24 @@ module RCLoadEnv
             "VAR1" => "binval",
             "VAR2" => "txtval",
             "NAME" => "value3",
-            "NAME_WITH_DASHES" => "value4"
+            "NAME_WITH_DASHES" => CRAZY_VALUE
           }
           assert_equal expected_env, loader.modify_env(env)
+        end
+      end
+
+      def test_write_dotenv
+        setup_loader do |loader|
+          expected_env = {
+            "VAR1" => "binval",
+            "VAR2" => "txtval",
+            "NAME" => "value3",
+            "NAME_WITH_DASHES" => CRAZY_VALUE
+          }
+          io = StringIO.new
+          loader.write_dotenv io
+          env = Dotenv::Parser.call io.string
+          assert_equal expected_env, env
         end
       end
 

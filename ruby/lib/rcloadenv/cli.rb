@@ -35,7 +35,7 @@ module RCLoadEnv
       @debug = false
 
       @parser = OptionParser.new do |opts|
-        opts.banner = "Usage: rcloadenv [options] <config-name> -- <command>"
+        opts.banner = "Usage: rcloadenv [options] <config-name> [-- <command>]"
         opts.on "-p name", "--project=name", "--projectId=name",
                 "Project to read runtime config from" do |p|
           @project = p
@@ -66,7 +66,7 @@ module RCLoadEnv
       end
 
       separator_index = args.index "--"
-      @command_list = separator_index ? args[(separator_index+1)..-1] : []
+      @command_list = separator_index ? args[(separator_index+1)..-1] : nil
 
       args = args[0..separator_index] if separator_index
       begin
@@ -82,8 +82,8 @@ module RCLoadEnv
         usage_error "Extra arguments found: #{remaining_args.inspect}"
       end
 
-      if @command_list.empty?
-        usage_error "You must provide a command delimited by `--`."
+      if @command_list && @command_list.empty?
+        usage_error "Command cannot be empty. To output dotenv format, omit `--`."
       end
     end
 
@@ -95,8 +95,12 @@ module RCLoadEnv
       loader = RCLoadEnv::Loader.new @config_name,
           exclude: @exclude, include: @include, override: @override,
           project: @project, debug: @debug
-      loader.modify_env ENV
-      exec(*@command_list)
+      if @command_list
+        loader.modify_env ENV
+        exec(*@command_list)
+      else
+        loader.write_dotenv
+      end
     end
 
     ## @private
