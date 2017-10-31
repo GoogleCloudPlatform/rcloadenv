@@ -7,8 +7,8 @@ Node.js implementation of [rcloadenv][].
 Wraps execution of a given command and loads variables from the
 [Google Cloud Runtime Config API][runtime] into that process.
 
-rcloadenv: https://github.com/GoogleCloudPlatform/rcloadenv
-runtime: https://cloud.google.com/deployment-manager/runtime-configurator/reference/rest/
+[rcloadenv]: https://github.com/GoogleCloudPlatform/rcloadenv
+[runtime]: https://cloud.google.com/deployment-manager/runtime-configurator/reference/rest/
 
 ## CLI
 
