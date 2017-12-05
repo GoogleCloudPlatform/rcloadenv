@@ -1,7 +1,9 @@
-## rcloadenv
+# rcloadenv
 
 `rcloadenv` is a tool for loading configuration from the [Runtime Config
 API](https://cloud.google.com/deployment-manager/runtime-configurator/).
+
+[![CircleCI Build Status](https://circleci.com/gh/GoogleCloudPlatform/rcloadenv.svg?&style=shield)](https://circleci.com/gh/GoogleCloudPlatform/rcloadenv)
 
 ## Installation
 
