@@ -14,10 +14,26 @@ Install the gem using
 Alternately, include "rcloadenv" in your application's Gemfile.
 
 You may then invoke the "rcloadenv" binary. You must pass the name of the
-runtime config resource, and then the command to execute. For example, if
-the gem is present in the bundle for your Rails app, you can execute:
+runtime config resource, and then optionally a command to execute, delimited
+by two dashes `--`.
+
+If a command is provided, rcloadenv loads the configuration into environment
+variables and runs the command. For example, if the gem is present in the
+bundle for your Rails app, you can execute:
 
     bundle exec rcloadenv my-config -- bin/rails s
+
+to run Rails directly with the loaded environment.
+
+If a command is _not_ provided_, rcloadenv loads the configuration and prints
+it to stdout in dotenv-compatible format. For example, you can execute:
+
+    bundle exec rcloadenv my-config > .env
+
+to create a `.env` file suitable for loading with the
+[dotenv](https://github.com/bkeepers/dotenv/) gem.
+
+### Accessing runtime config data
 
 If `rcloadenv` is run on Google Cloud Platform hosting (such as Google Compute
 Engine, Container Engine, or App Engine), then it infers the project name and
@@ -34,7 +50,7 @@ Run `rcloadenv --help` for more information on flags you can set.
 When not running on GCP, credentials are obtained from
 [Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials),
 so you can set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable or
-configure `gcloud auth`.
+configure `gcloud auth application-default login`.
 
 ## Example: Loading the Rails SECRET_KEY_BASE in Google App Engine
 

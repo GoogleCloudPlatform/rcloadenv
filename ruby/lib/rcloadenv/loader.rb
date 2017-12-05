@@ -13,6 +13,7 @@
 # limitations under the License.
 ;
 
+require "shellwords"
 require "rcloadenv/api_client"
 require "google/cloud/env"
 
@@ -72,7 +73,7 @@ module RCLoadEnv
           debug "Skipping config variable #{k}"
         else
           debug "Found config variable #{k}"
-          key = k.split("/").last.upcase.gsub("-", "_")
+          key = make_env_key k
           if !env.include?(key)
             debug "Setting envvar: #{key}"
             env[key] = v
@@ -88,7 +89,26 @@ module RCLoadEnv
     end
 
     ##
-    # Returns the has of variables retrieved from the runtime config.
+    # Modify the given environment with the configuration. The given hash
+    # is modified in place and returned. If no hash is provided, a new one is
+    # created and returned.
+    #
+    # @param [Hash<String,String>] env The environment to modify.
+    # @return the modified environment.
+    #
+    def write_dotenv io=STDOUT
+      raw_variables.each do |k, v|
+        key = make_env_key k
+        if key =~ /^[\w\.]+$/
+          io.puts "#{key}=\"#{escape_for_dotenv v}\""
+        else
+          error "Bad key: #{key}"
+        end
+      end
+    end
+
+    ##
+    # Returns the hash of variables retrieved from the runtime config.
     # Variable names have the parent (project and config name) stripped.
     # Values are all converted to strings.
     #
@@ -150,8 +170,23 @@ module RCLoadEnv
     end
 
     ## @private
+    def make_env_key key
+      key.split("/").last.upcase.gsub("-", "_")
+    end
+
+    ## @private
+    def escape_for_dotenv value
+      value.gsub("\\", "\\\\\\\\").gsub("\n", "\\\\n").gsub("$", "\\\\$")
+    end
+
+    ## @private
     def debug str
       STDERR.puts "RCLOADENV DEBUG: #{str}" if @debug
+    end
+
+    ## @private
+    def error str
+      STDERR.puts "RCLOADENV ERROR: #{str}"
     end
   end
 

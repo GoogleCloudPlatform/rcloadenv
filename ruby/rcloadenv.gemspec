@@ -48,4 +48,5 @@ require 'rcloadenv/version'
   spec.add_development_dependency "rake", "~> 11.0"
   spec.add_development_dependency "rdoc", "~> 4.2"
   spec.add_development_dependency "yard", "~> 0.9"
+  spec.add_development_dependency "dotenv", "~> 2.2"
 end
