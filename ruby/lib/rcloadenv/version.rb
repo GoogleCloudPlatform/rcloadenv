@@ -16,6 +16,6 @@
 module RCLoadEnv
 
   ## The current version of this gem, as a string.
-  VERSION = '0.2.0'.freeze
+  VERSION = '0.2.1'.freeze
 
 end
