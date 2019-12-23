@@ -1,3 +1,9 @@
+![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
+
+This project is no longer actively developed or maintained.
+
+For new work on this check out the [Secret Manager API](https://cloud.google.com/secret-manager/).
+
 # rcloadenv
 
 `rcloadenv` is a tool for loading configuration from the [Runtime Config
